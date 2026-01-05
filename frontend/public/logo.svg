@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 150" width="300" height="150">
+  <g transform="translate(100, 20)" fill="none" stroke="#003366" stroke-width="3">
+    <path d="M20,10 L20,70 Q20,80 30,80 L70,80 Q80,80 80,70 L80,30 L60,10 Z" stroke-linejoin="round" fill="#E6F0FF"/>
+    <path d="M60,10 L60,30 L80,30" stroke-linejoin="round"/>
+    <path d="M30,25 Q35,20 40,25 Q45,30 50,25 Q55,20 60,25" stroke-width="2" stroke="#4A90E2"/>
+    <path d="M35,55 L45,65 L65,45" stroke="#00C853" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <text x="150" y="110" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#003366" text-anchor="middle">
+    Paper Tracker
+  </text>
+  
+  <text x="150" y="135" font-family="Arial, sans-serif" font-size="14" fill="#666666" text-anchor="middle">
+    reading.ashwinms.com
+  </text>
+</svg>

@@ -1,0 +1,25 @@
+{
+  "name": "paper-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:api": "wrangler pages dev frontend/dist --local",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "build:frontend": "npm run build --workspace frontend",
+    "deploy": "wrangler pages deploy",
+    "check": "tsc --noEmit"
+  },
+  "workspaces": [
+    "frontend"
+  ],
+  "dependencies": {
+    "hono": "^4.4.6",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240620.0",
+    "typescript": "^5.4.5",
+    "wrangler": "^4.54.0"
+  }
+}

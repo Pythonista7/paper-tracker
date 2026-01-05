@@ -1,0 +1,16 @@
+name = "paper-tracker"
+compatibility_date = "2024-06-20"
+
+pages_build_output_dir = "frontend/dist"
+
+[vars]
+APP_NAME = "PaperTracker"
+
+[[d1_databases]]
+binding = "paper_tracker"
+database_name = "paper-tracker"
+database_id = "999533cd-1ad4-44d8-9072-1cebc01bba1a"
+
+[[kv_namespaces]]
+binding = "PAPER_CACHE"
+id = "d767c72d4aaf4a8da5a24ad5c38aba20"

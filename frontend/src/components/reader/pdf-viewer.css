@@ -1,0 +1,77 @@
+.rpv-core__toolbar,
+.rpv-core__toolbar .rpv-core__toolbar-left,
+.rpv-core__toolbar .rpv-core__toolbar-right {
+  background-color: rgba(11, 15, 28, 0.95) !important;
+  color: #f5f7fb !important;
+}
+
+.rpv-core__icon,
+.rpv-core__minimal-button__icon,
+.rpv-core__button {
+  color: #f5f7fb !important;
+}
+
+.rpv-core__minimal-button:hover {
+  background-color: rgba(71, 224, 202, 0.15) !important;
+}
+
+.rpv-toolbar__item {
+  color: #f5f7fb !important;
+}
+
+.rpv-core__menu,
+.rpv-core__popover-body {
+  background-color: rgba(11, 15, 28, 0.98) !important;
+  color: #f5f7fb !important;
+}
+
+.rpv-core__menu-item,
+.rpv-core__menu-item-button,
+.rpv-core__menu-item-label,
+.rpv-core__popover-item {
+  color: #f5f7fb !important;
+}
+.rpv-core__menu-item-button svg {
+  color: #f5f7fb !important;
+  fill: #f5f7fb !important;
+}
+
+.rpv-core__menu-icon {
+  color: #f5f7fb !important;
+}
+
+.rpv-core__menu-item-button svg,
+.rpv-core__popover-item svg,
+.rpv-core__menu-icon svg {
+  color: #f5f7fb !important;
+  fill: #f5f7fb !important;
+}
+
+.rpv-core__menu-item-button:hover,
+.rpv-core__popover-item:hover {
+  background-color: rgba(71, 224, 202, 0.2) !important;
+}
+
+.rpv-core__dropdown-item {
+  color: #f5f7fb !important;
+}
+
+.rpv-core__textbox {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  color: #f5f7fb !important;
+}
+
+.rpv-thumbnail__list,
+.rpv-bookmark__container,
+.rpv-toolbar__label {
+  color: #f5f7fb !important;
+}
+
+.rpv-core__tooltip-body {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  color: #f5f7fb !important;
+}
+
+.rpv-search__popover {
+  background-color: rgba(11, 15, 28, 0.95) !important;
+}
