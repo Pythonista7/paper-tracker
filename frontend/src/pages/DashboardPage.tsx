@@ -6,7 +6,7 @@ import { api } from '../api';
 import type { Paper, PaperStatus } from '../types';
 import { Input } from '../components/ui/input';
 import { BoardColumn } from '../components/dashboard/BoardColumn';
-import { DashboardSummary } from '../components/dashboard/DashboardSummary';
+// import { DashboardSummary } from '../components/dashboard/DashboardSummary';
 import { AddPaperModal } from '../components/dashboard/AddPaperModal';
 
 const STATUS_COLUMNS: { key: PaperStatus; title: string }[] = [

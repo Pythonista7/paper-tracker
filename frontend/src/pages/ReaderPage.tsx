@@ -114,9 +114,20 @@ export function ReaderPage() {
 
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full rounded-2xl border border-white/5 bg-surface-900/50 shadow-2xl">
-          <div className="flex h-full flex-col overflow-hidden bg-surface-900">
+      <div className="flex flex-1 flex-col gap-4 overflow-hidden p-4">
+        {paper.abstract && (
+          <div className="shrink-0 rounded-2xl border border-white/5 bg-surface-900 shadow-lg">
+            <div className="border-b border-white/5 p-4">
+              <h2 className="font-semibold">Abstract</h2>
+            </div>
+            <div className="max-h-60 overflow-y-auto p-4 text-sm leading-relaxed text-white/80">
+              {paper.abstract}
+            </div>
+          </div>
+        )}
+
+        <div className="flex-1 overflow-hidden rounded-2xl border border-white/5 bg-surface-900 shadow-2xl">
+          <div className="flex h-full flex-col overflow-hidden">
             <div className="border-b border-white/5 p-4">
               <h2 className="font-semibold">Notes</h2>
             </div>
