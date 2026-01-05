@@ -5,6 +5,7 @@ import type { ToolbarSlot } from '@react-pdf-viewer/toolbar';
 import { thumbnailPlugin } from '@react-pdf-viewer/thumbnail';
 import { bookmarkPlugin } from '@react-pdf-viewer/bookmark';
 import { searchPlugin } from '@react-pdf-viewer/search';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/toolbar/lib/styles/index.css';
 import '@react-pdf-viewer/thumbnail/lib/styles/index.css';
@@ -67,29 +68,48 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
           </Toolbar>
           <Search>
             {(renderProps) => (
-              <form
-                className="flex items-center gap-2"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  renderProps.search();
-                }}
-              >
-                <input
-                  className="rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-sm text-white"
-                  placeholder="Search"
-                  type="text"
-                  value={renderProps.keyword}
-                  onChange={(e) => renderProps.setKeyword(e.target.value)}
-                />
-                <Button type="submit" variant="ghost">
-                  Go
-                </Button>
+              <div className="flex items-center gap-2">
+                <form
+                  className="flex items-center gap-2"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    renderProps.search();
+                  }}
+                >
+                  <input
+                    className="rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-sm text-white w-32 focus:w-48 transition-all outline-none focus:border-accent/50"
+                    placeholder="Search..."
+                    type="text"
+                    value={renderProps.keyword}
+                    onChange={(e) => renderProps.setKeyword(e.target.value)}
+                  />
+                </form>
                 {renderProps.numberOfMatches > 0 && (
-                  <span className="text-xs text-white/60">
-                    {renderProps.currentMatch + 1}/{renderProps.numberOfMatches}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-white/60 min-w-[3rem] text-center select-none">
+                      {renderProps.currentMatch} / {renderProps.numberOfMatches}
+                    </span>
+                    <div className="flex items-center rounded-md border border-white/10 bg-white/5">
+                      <button
+                        className="p-1 hover:bg-white/10 text-white/70 hover:text-white transition-colors border-r border-white/10"
+                        onClick={renderProps.jumpToPreviousMatch}
+                        title="Previous match"
+                        type="button"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        className="p-1 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+                        onClick={renderProps.jumpToNextMatch}
+                        title="Next match"
+                        type="button"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
                 )}
-              </form>
+              </div>
             )}
           </Search>
           <Button variant="ghost" onClick={() => setSidebar(sidebar ? null : 'thumbnails')}>
