@@ -46,5 +46,9 @@ export interface ShareToken {
 export interface Env {
   DB: D1Database;
   PAPER_CACHE: KVNamespace;
+  AUTH_STORE: KVNamespace;
+  RATE_LIMIT_STORE: KVNamespace;
   APP_NAME: string;
+  ADMIN_EMAIL?: string;
+  ADMIN_PASSWORD_HASH?: string;
 }

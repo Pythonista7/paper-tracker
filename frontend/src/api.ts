@@ -7,6 +7,7 @@ type FetchOptions = RequestInit & { headers?: Record<string, string> };
 async function request<T>(path: string, options: FetchOptions = {}) {
   const response = await fetch(`${API_BASE}${path}`, {
     ...options,
+    credentials: 'include', // Important: include cookies for auth
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers ?? {})
@@ -15,7 +16,9 @@ async function request<T>(path: string, options: FetchOptions = {}) {
 
   if (!response.ok) {
     const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    throw new Error(payload.error ?? 'Request failed');
+    const error = new Error(payload.error ?? 'Request failed') as Error & { status?: number };
+    error.status = response.status;
+    throw error;
   }
 
   return (await response.json()) as T;
@@ -44,3 +47,21 @@ export const api = {
   getDashboard: () => request<DashboardSummary>('/dashboard'),
   ingest: (sourceUrl: string) => request<Omit<CreatePaperInput, 'sourceUrl'>>('/papers/ingest', { method: 'POST', body: JSON.stringify({ sourceUrl }) })
 };
+
+// Auth API
+export async function login(email: string, password: string) {
+  return request<{ success: boolean; email: string }>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password })
+  });
+}
+
+export async function logout() {
+  return request<{ success: boolean }>('/auth/logout', {
+    method: 'POST'
+  });
+}
+
+export async function checkAuth() {
+  return request<{ authenticated: boolean; email?: string }>('/auth/check');
+}

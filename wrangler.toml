@@ -14,3 +14,11 @@ database_id = "999533cd-1ad4-44d8-9072-1cebc01bba1a"
 [[kv_namespaces]]
 binding = "PAPER_CACHE"
 id = "d767c72d4aaf4a8da5a24ad5c38aba20"
+
+[[kv_namespaces]]
+binding = "AUTH_STORE"
+id = "cf7fcdfb78c84b92b830b16091ce2eba"
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT_STORE"
+id = "6de12a4e0e3343ea8d89e535de99eda7"

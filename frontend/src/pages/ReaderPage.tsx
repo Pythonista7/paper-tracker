@@ -1,16 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeftCircle, ChevronDown, ExternalLink, PenLine } from 'lucide-react';
+import { ChevronLeftCircle, ChevronDown, PenLine } from 'lucide-react';
 import { api } from '../api';
 import type { Paper, PaperStatus } from '../types';
 import { STATUSES } from '../constants';
 import { Button } from '../components/ui/button';
 import { NotesPreview } from '../components/reader/NotesPreview';
+import { useAuth } from '../contexts/AuthContext';
 
 export function ReaderPage() {
   const { paperId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
 
   const paperQuery = useQuery({
     queryKey: ['paper', paperId],
@@ -97,21 +99,21 @@ export function ReaderPage() {
             className="h-9 px-3 text-xs" 
             onClick={() => window.open(paper.sourceUrl, '_blank')}
           >
-            <ExternalLink className="mr-2 h-3.5 w-3.5" />
             Source
           </Button>
           
-          <Button 
-            variant="primary" 
-            className="h-9 px-3 text-xs" 
-            onClick={() => navigate(`/focus/${paper.id}`)}
-          >
-            <PenLine className="mr-2 h-3.5 w-3.5" />
-            Focus
-          </Button>
+          {isAuthenticated && (
+            <Button 
+              variant="primary" 
+              className="h-9 px-3 text-xs" 
+              onClick={() => navigate(`/focus/${paper.id}`)}
+            >
+              <PenLine className="mr-2 h-3.5 w-3.5" />
+              Focus
+            </Button>
+          )}
         </div>
       </header>
-
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col gap-4 overflow-hidden p-4">
@@ -137,6 +139,6 @@ export function ReaderPage() {
           </div>
         </div>
       </div>
-      </div>
+    </div>
   );
 }

@@ -10,8 +10,7 @@ interface SplitPanelProps {
   right: ReactNode;
 }
 
-export function SplitPanel({ initial = 60, min = 35, max = 70, id, left, right }: SplitPanelProps) {
-  const paperId = id;
+export function SplitPanel({ initial = 60, min = 35, max = 70, left, right }: SplitPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [ratio, setRatio] = useState(initial);
 

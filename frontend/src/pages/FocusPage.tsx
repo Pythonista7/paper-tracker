@@ -6,12 +6,18 @@ import { Button } from '../components/ui/button';
 import { PdfViewer } from '../components/reader/PdfViewer';
 import { NotesPanel } from '../components/reader/NotesPanel';
 import { SplitPanel } from '../components/ui/split-panel';
+import { useAuth } from '../contexts/AuthContext';
 
 export function FocusPage() {
   const { paperId } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const paperQuery = useQuery({ queryKey: ['paper', paperId], queryFn: () => api.getPaper(paperId!), enabled: Boolean(paperId) });
 
+  // Redirect to login if not authenticated
+  if (!authLoading && !isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   if (!paperId) {
     return <Navigate to="/dashboard" replace />;

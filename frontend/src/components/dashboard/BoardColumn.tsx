@@ -6,6 +6,7 @@ import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { StatusBadge } from '../ui/status-badge';
 import { EditPaperModal } from './EditPaperModal';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ColumnProps {
   title: string;
@@ -34,6 +35,7 @@ export function BoardColumn({ title, papers, onOpen }: ColumnProps) {
 
 function PaperCard({ paper, onOpen }: { paper: Paper; onOpen: () => void }) {
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
   const mutation = useMutation({
     mutationFn: (status: PaperStatus) => api.updatePaper(paper.id, { status }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['papers'] })
@@ -63,7 +65,7 @@ function PaperCard({ paper, onOpen }: { paper: Paper; onOpen: () => void }) {
         </div>
       )}
       <div className="flex flex-wrap items-center gap-2">
-        <select
+        {isAuthenticated && <select
           className="flex-1 rounded-xl border border-white/10 bg-transparent px-3 py-2 text-sm text-white"
           value={paper.status}
           onChange={(event) => mutation.mutate(event.target.value as PaperStatus)}
@@ -72,13 +74,13 @@ function PaperCard({ paper, onOpen }: { paper: Paper; onOpen: () => void }) {
           <option value="in-progress">In Progress</option>
           <option value="needs-review">Needs Review</option>
           <option value="done">Done</option>
-        </select>
+        </select>}
         <div className='flex justify-around gap-2'>
           <Button variant="primary" onClick={onOpen}>
             Open
           </Button>
-          <EditPaperModal paper={paper} />
-          <Button
+          {isAuthenticated && <EditPaperModal paper={paper} />}
+          { isAuthenticated && <Button
             variant="danger"
             className="px-2 text-red-400 hover:bg-red-400/10 hover:text-red-300"
             onClick={() => {
@@ -89,6 +91,7 @@ function PaperCard({ paper, onOpen }: { paper: Paper; onOpen: () => void }) {
           >
             <Trash2 className="h-4 w-4" />
           </Button>
+          }
         </div>
       </div>
     </Card>

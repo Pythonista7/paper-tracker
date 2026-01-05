@@ -1,6 +1,17 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { Button } from './ui/button';
+import { LogOut, LogIn } from 'lucide-react';
 
 export function AppLayout() {
+  const { isAuthenticated, logout, email } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-app text-white">
       <header className="sticky top-0 z-30 border-b border-white/5 bg-surface-900/90 backdrop-blur">
@@ -16,14 +27,28 @@ export function AppLayout() {
             <NavLink className={({ isActive }) => navClass(isActive)} to="/read">
               Reader
             </NavLink>
-            <a
-              href="https://github.com/"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-wide text-white/70 hover:text-white"
-            >
-              Share
-            </a>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-white/50">{email}</span>
+                <Button
+                  variant="ghost"
+                  onClick={handleLogout}
+                  className="h-7 gap-1 px-2 text-xs"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/login')}
+                className="h-7 gap-1 px-2 text-xs"
+              >
+                <LogIn className="h-3.5 w-3.5" />
+                Login
+              </Button>
+            )}
           </nav>
         </div>
       </header>

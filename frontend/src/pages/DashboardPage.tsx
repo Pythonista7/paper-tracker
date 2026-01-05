@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { BoardColumn } from '../components/dashboard/BoardColumn';
 // import { DashboardSummary } from '../components/dashboard/DashboardSummary';
 import { AddPaperModal } from '../components/dashboard/AddPaperModal';
+import { useAuth } from '../contexts/AuthContext';
 
 const STATUS_COLUMNS: { key: PaperStatus; title: string }[] = [
   { key: 'to-read', title: 'To read' },
@@ -20,6 +21,7 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const papersQuery = useQuery({ queryKey: ['papers'], queryFn: () => api.getPapers() });
+  const { isAuthenticated } = useAuth();
 
   const filtered = useMemo(() => {
     const list = papersQuery.data ?? [];
@@ -60,7 +62,7 @@ export function DashboardPage() {
               className="w-64 pl-9 text-black"
             />
           </div>
-          <AddPaperModal />
+          {isAuthenticated && <AddPaperModal />}
         </div>
       </section>
 
