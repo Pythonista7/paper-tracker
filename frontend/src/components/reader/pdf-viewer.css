@@ -75,3 +75,9 @@
 .rpv-search__popover {
   background-color: rgba(11, 15, 28, 0.95) !important;
 }
+
+.rpv-bookmark__title,
+.rpv-bookmark__item,
+.rpv-bookmark__icon {
+  color: #f5f7fb !important;
+}

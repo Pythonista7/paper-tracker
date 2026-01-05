@@ -70,10 +70,10 @@ export function DashboardPage() {
         ))}
       </section>
 
-      <section>
+      {/* <section>
         <h3 className="mb-4 text-xl font-semibold">Pulse</h3>
         <DashboardSummary />
-      </section>
+      </section> */}
     </div>
   );
 }

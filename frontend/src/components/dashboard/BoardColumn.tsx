@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Trash2 } from 'lucide-react';
 import type { Paper, PaperStatus } from '../../types';
 import { api } from '../../api';
 import { Card } from '../ui/card';
@@ -37,6 +38,11 @@ function PaperCard({ paper, onOpen }: { paper: Paper; onOpen: () => void }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['papers'] })
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: () => api.deletePaper(paper.id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['papers'] })
+  });
+
   return (
     <Card className="space-y-3">
       <div className="flex items-center justify-between gap-2">
@@ -66,9 +72,22 @@ function PaperCard({ paper, onOpen }: { paper: Paper; onOpen: () => void }) {
           <option value="needs-review">Needs Review</option>
           <option value="done">Done</option>
         </select>
-        <Button variant="subtle" onClick={onOpen}>
-          Open
-        </Button>
+        <div className='flex justify-around gap-2'>
+          <Button variant="primary" onClick={onOpen}>
+            Open
+          </Button>
+          <Button
+            variant="danger"
+            className="px-2 text-red-400 hover:bg-red-400/10 hover:text-red-300"
+            onClick={() => {
+              if (confirm('Are you sure you want to delete this paper?')) {
+                deleteMutation.mutate();
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </Card>
   );
