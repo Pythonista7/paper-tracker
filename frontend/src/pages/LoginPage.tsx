@@ -37,16 +37,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-black-50 px-4">
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">PaperTracker</h1>
-          <p className="text-gray-600">Sign in to manage your papers</p>
+          <h1 className="text-3xl font-bold text-white-900 mb-2">PaperTracker</h1>
+          <p className="text-white-600">Sign in to manage your papers!</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-white-700 mb-2">
               Email
             </label>
             <Input
@@ -62,7 +62,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-white-700 mb-2">
               Password
             </label>
             <Input
@@ -93,7 +93,7 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Don't have an account? This is a private instance.</p>
+          <p>Don't have an account? Good, this is only for Ashwin.</p>
         </div>
       </Card>
     </div>

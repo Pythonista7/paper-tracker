@@ -17,8 +17,8 @@ export function AppLayout() {
       <header className="sticky top-0 z-30 border-b border-white/5 bg-surface-900/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div>
-            <p className="text-sm text-white/60">PaperTracker</p>
-            <h1 className="text-xl font-semibold">Research cockpit</h1>
+            <h1 className="text-xl font-semibold">PaperTracker</h1>
+            <p className="text-sm text-white/60">Research cockpit </p>
           </div>
           <nav className="flex items-center gap-2 text-sm">
             <NavLink className={({ isActive }) => navClass(isActive)} to="/dashboard">

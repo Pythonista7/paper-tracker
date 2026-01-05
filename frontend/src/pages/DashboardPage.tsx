@@ -49,8 +49,8 @@ export function DashboardPage() {
     <div className="space-y-10">
       <section className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-sm uppercase tracking-wide text-white/50">Control room</p>
           <h2 className="text-3xl font-semibold">Dashboard</h2>
+          <p className="text-sm uppercase tracking-wide text-white/50">for all that ashwinms.com is reading</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
