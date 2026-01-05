@@ -5,6 +5,7 @@ import { api } from '../../api';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { StatusBadge } from '../ui/status-badge';
+import { EditPaperModal } from './EditPaperModal';
 
 interface ColumnProps {
   title: string;
@@ -76,6 +77,7 @@ function PaperCard({ paper, onOpen }: { paper: Paper; onOpen: () => void }) {
           <Button variant="primary" onClick={onOpen}>
             Open
           </Button>
+          <EditPaperModal paper={paper} />
           <Button
             variant="danger"
             className="px-2 text-red-400 hover:bg-red-400/10 hover:text-red-300"
