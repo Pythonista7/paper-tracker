@@ -1,6 +1,7 @@
+![alt text](images/image.png)
 # Paper Tracker
 
-A lightweight Cloudflare-ready reading workspace for research papers. Track PDFs from URLs (arXiv, journals, etc.), keep progress states, and write contextual Markdown notes beside an embedded viewer.
+A lightweight self-hosted Cloudflare-ready reading workspace to track and share your research pipeline and thoughts. Track PDFs from URLs (arXiv, journals, etc.), keep progress states, and write contextual Markdown notes beside an embedded viewer.
 
 ## Stack
 
@@ -36,7 +37,7 @@ npm install --prefix frontend
    ```
 
    > NOTE: USE YOUR OWN RESOURCE IDS CREATED ABOVE.
-   
+
 
    ```
    To access your new D1 Database in your Worker, add the following snippet to your configuration file:
