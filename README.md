@@ -1,4 +1,4 @@
-![alt text](images/image.png)
+[![alt text](images/image.png)](https://rlist.ashwinms.com)
 # Paper Tracker
 
 A lightweight self-hosted Cloudflare-ready reading workspace to track and share your research pipeline and thoughts. Track PDFs from URLs (arXiv, journals, etc.), keep progress states, and write contextual Markdown notes beside an embedded viewer.
