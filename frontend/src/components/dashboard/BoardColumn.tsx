@@ -49,19 +49,20 @@ function PaperCard({ paper, onOpen }: { paper: Paper; onOpen: () => void }) {
   return (
     <Card className="space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <div>
-          <h3 className="text-base font-semibold">{paper.title}</h3>
-          <p className="text-sm text-white/60">{paper.authors || 'Unknown authors'}</p>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-base font-semibold" title={paper.title}>{paper.title}</h3>
+          <p className="truncate text-sm text-white/60" title={paper.authors || 'Unknown authors'}>{paper.authors || 'Unknown authors'}</p>
         </div>
-        <StatusBadge status={paper.status} />
       </div>
+      <StatusBadge status={paper.status} />
       {paper.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 text-xs text-white/70">
           {paper.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-white/10 px-2 py-0.5">
+            <span key={tag} className="truncate max-w-[120px] rounded-full bg-white/10 px-2 py-0.5" title={tag}>
               {tag}
             </span>
           ))}
+        
         </div>
       )}
       <div className="flex flex-wrap items-center gap-2">
