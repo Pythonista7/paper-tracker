@@ -42,7 +42,7 @@ export function SplitPanel({ initial = 60, min = 35, max = 70, left, right }: Sp
 
   return (
     <div ref={containerRef} className="flex h-full w-full">
-      <div className="h-full" style={{ flexBasis: `${ratio}%` }}>
+      <div className="h-full overflow-y-auto" style={{ flexBasis: `${ratio}%` }}>
         {left}
       </div>
       <div
@@ -51,7 +51,7 @@ export function SplitPanel({ initial = 60, min = 35, max = 70, left, right }: Sp
         role="separator"
         aria-orientation="vertical"
       />
-      <div className="h-full flex-1">{right}</div>
+      <div className="h-full flex-1 overflow-y-auto">{right}</div>
     </div>
   );
 }
