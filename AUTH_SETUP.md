@@ -9,32 +9,41 @@ Your PaperTracker now has authentication! Follow these steps to complete the set
 Run this command with your desired password:
 
 ```bash
-node generate-password-hash.js "YourSecurePassword123"
+node generate-password-hash.js "fullsec"
 ```
 
 This will output a SHA-256 hash of your password.
 
-### Step 2: Set Environment Secrets
+### Step 2: Initial Deploy
 
-Set your admin email:
+First, deploy your application to create the Pages project:
 ```bash
-npx wrangler secret put ADMIN_EMAIL
+cd frontend
+npm run build
+cd ..
+npx wrangler pages deploy frontend/dist
+```
+
+**Note**: On first deploy, you'll be prompted to create a new project. You can name it `paper-tracker` or any name you prefer.
+
+### Step 3: Set Environment Secrets
+
+After the project is created, set your admin email (replace `paper-tracker` with your project name if different):
+```bash
+npx wrangler pages secret put ADMIN_EMAIL --project-name=paper-tracker
 # When prompted, enter your email address
 ```
 
 Set your password hash:
 ```bash
-npx wrangler secret put ADMIN_PASSWORD_HASH
+npx wrangler pages secret put ADMIN_PASSWORD_HASH --project-name=paper-tracker
 # When prompted, paste the hash from Step 1
 ```
 
-### Step 3: Deploy
+### Step 4: Redeploy
 
-Deploy your application:
+Redeploy to apply the secrets:
 ```bash
-cd frontend
-npm run build
-cd ..
 npx wrangler pages deploy frontend/dist
 ```
 
