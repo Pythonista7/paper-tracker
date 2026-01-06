@@ -18,7 +18,9 @@ import {
   codeMirrorPlugin,
   InsertCodeBlock,
   ConditionalContents,
-  ChangeCodeMirrorLanguage
+  ChangeCodeMirrorLanguage,
+  listsPlugin,
+  ListsToggle
 } from '@mdxeditor/editor';
 
 interface Props {
@@ -76,6 +78,7 @@ export function NotesPanel({ paperId, sourceUrl }: Props) {
                     <BoldItalicUnderlineToggles />
                     <InsertCodeBlock />
                     <CodeToggle />
+                    <ListsToggle />
                     <BlockTypeSelect />
                     <CreateLink />
                   </>
@@ -95,6 +98,7 @@ export function NotesPanel({ paperId, sourceUrl }: Props) {
         contentEditableClassName="notes-editor__content"
         plugins={[
           headingsPlugin(),
+          listsPlugin(),
           linkPlugin(),
           markdownShortcutPlugin(),
           codeBlockPlugin({ defaultCodeBlockLanguage: 'js' }),
