@@ -56,9 +56,9 @@ export function ReaderPage() {
   const paper: Paper = paperQuery.data;
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-surface-950 text-white">
+    <div className="relative -mx-6 -my-8">
       {/* Header */}
-      <header className="flex h-16 shrink-0 items-center justify-between bg-surface-900 px-4">
+      <header className="sticky top-[57px] z-10 flex h-16 items-center justify-between border-b border-white/5 bg-surface-900 px-6 mt-3 shadow-lg">
         <div className="flex items-center gap-4 overflow-hidden">
           <Button 
             variant="ghost"
@@ -116,7 +116,7 @@ export function ReaderPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col gap-4 overflow-hidden p-4">
+      <div className="flex flex-col gap-4 px-6 py-4">
         {paper.abstract && (
           <div className="shrink-0 rounded-2xl border border-white/5 bg-surface-900 shadow-lg">
             <div className="border-b border-white/5 p-4">
@@ -128,14 +128,12 @@ export function ReaderPage() {
           </div>
         )}
 
-        <div className="flex-1 overflow-hidden rounded-2xl border border-white/5 bg-surface-900 shadow-2xl">
-          <div className="flex h-full flex-col overflow-hidden">
-            <div className="border-b border-white/5 p-4">
-              <h2 className="font-semibold">Notes</h2>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4">
-              <NotesPreview paperId={paper.id} />
-            </div>
+        <div className="shrink-0 rounded-2xl border border-white/5 bg-surface-900 shadow-2xl">
+          <div className="border-b border-white/5 p-4">
+            <h2 className="font-semibold">Notes</h2>
+          </div>
+          <div className="p-4">
+            <NotesPreview paperId={paper.id} />
           </div>
         </div>
       </div>
