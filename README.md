@@ -34,31 +34,34 @@ npm install --prefix frontend
    npx wrangler kv namespace create RATE_LIMIT_STORE
    npx wrangler r2 bucket create paper-tracker-images
    ```
-> Done
+
+   > NOTE: USE YOUR OWN RESOURCE IDS CREATED ABOVE.
+   
+
    ```
    To access your new D1 Database in your Worker, add the following snippet to your configuration file:
-[[d1_databases]]
-binding = "paper_tracker"
-database_name = "paper-tracker"
-database_id = "999533cd-1ad4-44d8-9072-1cebc01bba1a"
-   ---
-To access your new KV Namespace in your Worker, add the following snippet to your configuration file:
-[[kv_namespaces]]
-binding = "PAPER_CACHE"
-id = "d767c72d4aaf4a8da5a24ad5c38aba20"
+   [[d1_databases]]
+   binding = "paper_tracker"
+   database_name = "paper-tracker"
+   database_id = "999533cd-1ad4-44d8-9072-1cebc01bba1a"
+      ---
+   To access your new KV Namespace in your Worker, add the following snippet to your configuration file:
+   [[kv_namespaces]]
+   binding = "PAPER_CACHE"
+   id = "d767c72d4aaf4a8da5a24ad5c38aba20"
 
-[[kv_namespaces]]
-binding = "AUTH_STORE"
-id = "cf7fcdfb78c84b92b830b16091ce2eba"
+   [[kv_namespaces]]
+   binding = "AUTH_STORE"
+   id = "cf7fcdfb78c84b92b830b16091ce2eba"
 
-[[kv_namespaces]]
-binding = "RATE_LIMIT_STORE"
-id = "6de12a4e0e3343ea8d89e535de99eda7"
-   ---
-To access your new R2 Bucket in your Worker, add the following snippet to your configuration file:
-[[r2_buckets]]
-binding = "IMAGES"
-bucket_name = "paper-tracker-images"
+   [[kv_namespaces]]
+   binding = "RATE_LIMIT_STORE"
+   id = "6de12a4e0e3343ea8d89e535de99eda7"
+      ---
+   To access your new R2 Bucket in your Worker, add the following snippet to your configuration file:
+   [[r2_buckets]]
+   binding = "IMAGES"
+   bucket_name = "paper-tracker-images"
    ```
 
 2. Update `wrangler.toml` with the generated IDs for D1, KV namespaces, and R2 bucket.
