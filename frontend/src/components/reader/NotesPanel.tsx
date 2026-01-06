@@ -20,7 +20,10 @@ import {
   ConditionalContents,
   ChangeCodeMirrorLanguage,
   listsPlugin,
-  ListsToggle
+  ListsToggle,
+  imagePlugin,
+  InsertImage,
+  quotePlugin
 } from '@mdxeditor/editor';
 
 interface Props {
@@ -36,6 +39,7 @@ export function NotesPanel({ paperId, sourceUrl }: Props) {
   const existingNote = notesQuery.data?.[0];
   const [value, setValue] = useState(existingNote?.body ?? '');
   const [status, setStatus] = useState<'idle' | 'saving'>('idle');
+  const [imageUploadStatus, setImageUploadStatus] = useState<'idle' | 'uploading'>('idle');
 
   const saveMutation = useMutation<Note | undefined, Error, string>({
     mutationFn: async (body: string) => {
@@ -64,6 +68,20 @@ export function NotesPanel({ paperId, sourceUrl }: Props) {
     return () => clearTimeout(handle);
   }, [value]);
 
+  const imageUploadHandler = async (image: File): Promise<string> => {
+    setImageUploadStatus('uploading');
+    try {
+      const result = await api.uploadImage(image);
+      setImageUploadStatus('idle');
+      return result.url;
+    } catch (error) {
+      setImageUploadStatus('idle');
+      console.error('Failed to upload image:', error);
+      alert('Failed to upload image. Please try again.');
+      throw error;
+    }
+  };
+
   const editor = useMemo(() => {
     const toolbar = toolbarPlugin({
       toolbarContents: () => (
@@ -79,6 +97,7 @@ export function NotesPanel({ paperId, sourceUrl }: Props) {
                     <InsertCodeBlock />
                     <CodeToggle />
                     <ListsToggle />
+                    <InsertImage />
                     <BlockTypeSelect />
                     <CreateLink />
                   </>
@@ -99,7 +118,12 @@ export function NotesPanel({ paperId, sourceUrl }: Props) {
         plugins={[
           headingsPlugin(),
           listsPlugin(),
+          quotePlugin(),
           linkPlugin(),
+          imagePlugin({
+            imageUploadHandler,
+            disableImageResize: false
+          }),
           markdownShortcutPlugin(),
           codeBlockPlugin({ defaultCodeBlockLanguage: 'js' }),
           codeMirrorPlugin({ codeBlockLanguages: { js: 'JavaScript', css: 'CSS', ts: 'TypeScript', tsx: 'TypeScript (React)', jsx: 'JavaScript (React)' }, autoLoadLanguageSupport: true }),
@@ -122,7 +146,12 @@ export function NotesPanel({ paperId, sourceUrl }: Props) {
           </button>
         </div>
         <div className="mt-4 text-white">{editor}</div>
-        <p className="mt-2 text-xs text-white/50">{status === 'saving' ? 'Saving…' : 'Autosaved'}</p>
+        <div className="mt-2 flex items-center justify-between text-xs text-white/50">
+          <span>{status === 'saving' ? 'Saving…' : 'Autosaved'}</span>
+          {imageUploadStatus === 'uploading' && (
+            <span className="text-accent">Uploading image…</span>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -158,6 +158,14 @@ iframe {
   color: #f5f7fb;
 }
 
+.notes-editor__content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .notes-editor__content blockquote {
   border-left: 4px solid rgba(71, 224, 202, 0.5);
   margin: 0 0 1rem 0;
@@ -322,4 +330,47 @@ iframe {
 .notes-editor .mdxeditor-toolbar-popover svg {
   color: var(--mdxeditor-foreground-color) !important;
   fill: var(--mdxeditor-foreground-color) !important;
+}
+
+/* Image action buttons - target the container and all buttons inside images */
+.notes-editor img + button,
+.notes-editor img ~ button,
+.notes-editor [data-editor-type="image"] button,
+.notes-editor .mdxeditor-image-button,
+.notes-editor [class*="image"] button,
+.notes-editor div:has(> img) button {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  padding: 0.25rem !important;
+}
+
+.notes-editor img + button:hover,
+.notes-editor img ~ button:hover,
+.notes-editor [data-editor-type="image"] button:hover,
+.notes-editor .mdxeditor-image-button:hover,
+.notes-editor [class*="image"] button:hover,
+.notes-editor div:has(> img) button:hover {
+  background-color: rgba(0, 0, 0, 0.95) !important;
+}
+
+.notes-editor img + button svg,
+.notes-editor img ~ button svg,
+.notes-editor [data-editor-type="image"] button svg,
+.notes-editor .mdxeditor-image-button svg,
+.notes-editor [class*="image"] button svg,
+.notes-editor div:has(> img) button svg {
+  color: #f5f7fb !important;
+  fill: #f5f7fb !important;
+}
+
+/* More aggressive targeting for any button near an image */
+.notes-editor__content button {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.notes-editor__content button svg {
+  color: #f5f7fb !important;
+  fill: #f5f7fb !important;
+  stroke: #f5f7fb !important;
 }

@@ -22,3 +22,7 @@ id = "cf7fcdfb78c84b92b830b16091ce2eba"
 [[kv_namespaces]]
 binding = "RATE_LIMIT_STORE"
 id = "6de12a4e0e3343ea8d89e535de99eda7"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "paper-tracker-images"

@@ -48,6 +48,7 @@ export interface Env {
   PAPER_CACHE: KVNamespace;
   AUTH_STORE: KVNamespace;
   RATE_LIMIT_STORE: KVNamespace;
+  IMAGES: R2Bucket;
   APP_NAME: string;
   ADMIN_EMAIL?: string;
   ADMIN_PASSWORD_HASH?: string;

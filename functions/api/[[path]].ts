@@ -340,6 +340,74 @@ app.post('/papers/ingest', async (c) => {
   return c.json(metadata);
 });
 
+app.post('/images/upload', async (c) => {
+  const authError = await requireAuth(c);
+  if (authError) return authError;
+
+  const formData = await c.req.formData();
+  const file = formData.get('image') as File;
+  
+  if (!file) {
+    return c.json({ error: 'No image file provided' }, 400);
+  }
+
+  // Validate file type
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    return c.json({ error: 'Invalid file type. Only PNG, JPEG, GIF, and WebP are allowed.' }, 400);
+  }
+
+  // Validate file size (10MB max)
+  const maxSize = 10 * 1024 * 1024;
+  if (file.size > maxSize) {
+    return c.json({ error: 'File too large. Maximum size is 10MB.' }, 400);
+  }
+
+  // Generate unique filename
+  const timestamp = Date.now();
+  const randomString = Math.random().toString(36).substring(2, 15);
+  const extension = file.name.split('.').pop() || 'png';
+  const filename = `${timestamp}-${randomString}.${extension}`;
+
+  try {
+    // Upload to R2
+    const arrayBuffer = await file.arrayBuffer();
+    await c.env.IMAGES.put(filename, arrayBuffer, {
+      httpMetadata: {
+        contentType: file.type,
+      },
+    });
+
+    // Return public URL
+    const imageUrl = `/api/images/${filename}`;
+    return c.json({ url: imageUrl }, 201);
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    return c.json({ error: 'Failed to upload image' }, 500);
+  }
+});
+
+app.get('/images/:filename', async (c) => {
+  const filename = c.req.param('filename');
+  
+  try {
+    const object = await c.env.IMAGES.get(filename);
+    
+    if (!object) {
+      return c.json({ error: 'Image not found' }, 404);
+    }
+
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+
+    return new Response(object.body, { headers });
+  } catch (error) {
+    console.error('Error retrieving image:', error);
+    return c.json({ error: 'Failed to retrieve image' }, 500);
+  }
+});
+
 export const onRequest: PagesFunction<Env> = (context) => {
   const url = new URL(context.request.url);
   if (url.pathname.startsWith('/api')) {
