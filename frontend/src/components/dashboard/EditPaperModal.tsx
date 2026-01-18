@@ -19,6 +19,8 @@ export function EditPaperModal({ paper, onUpdated }: Props) {
   const [authors, setAuthors] = useState(paper.authors);
   const [abstract, setAbstract] = useState(paper.abstract);
   const [tags, setTags] = useState(paper.tags.join(', '));
+  const [publishedAt, setPublishedAt] = useState(paper.publishedAt ? paper.publishedAt.split('T')[0] : '');
+  const [loadingMeta, setLoadingMeta] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'links'>('details');
   const [targetPaperId, setTargetPaperId] = useState('');
   const [relation, setRelation] = useState('related-to');
@@ -30,6 +32,7 @@ export function EditPaperModal({ paper, onUpdated }: Props) {
         title: title || paper.title,
         authors,
         abstract,
+        publishedAt: publishedAt || undefined,
         tags: tags
           .split(',')
           .map((tag) => tag.trim())
@@ -76,8 +79,23 @@ export function EditPaperModal({ paper, onUpdated }: Props) {
       setAuthors(paper.authors);
       setAbstract(paper.abstract);
       setTags(paper.tags.join(', '));
+      setPublishedAt(paper.publishedAt ? paper.publishedAt.split('T')[0] : '');
     }
     setOpen(isOpen);
+  };
+
+  const refetchPublishedDate = async () => {
+    setLoadingMeta(true);
+    try {
+      const metadata = await api.ingest(paper.sourceUrl, true); // Bust cache when refetching
+      if (metadata.publishedAt) {
+        setPublishedAt(metadata.publishedAt.split('T')[0]);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingMeta(false);
+    }
   };
 
   return (
@@ -118,6 +136,22 @@ export function EditPaperModal({ paper, onUpdated }: Props) {
             <Input placeholder="Authors" value={authors} onChange={(event) => setAuthors(event.target.value)} />
           </div>
           <Textarea placeholder="Abstract" value={abstract} onChange={(event) => setAbstract(event.target.value)} rows={3} />
+          <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+            <Input
+              type="date"
+              placeholder="Published Date"
+              value={publishedAt}
+              onChange={(event) => setPublishedAt(event.target.value)}
+            />
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={refetchPublishedDate}
+              disabled={loadingMeta}
+            >
+              {loadingMeta ? 'Fetching…' : 'Refetch date'}
+            </Button>
+          </div>
           <Input placeholder="Tags (comma separated)" value={tags} onChange={(event) => setTags(event.target.value)} />
           <div className="flex items-center justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>

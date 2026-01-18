@@ -115,7 +115,7 @@ export function TimelineView({ papers, groupBy = 'date' }: Props) {
             <div key={group} className="relative pl-10">
                 <div className="absolute -left-[13px] top-1 h-6 w-6 rounded-full bg-primary border-4 border-background shadow-lg shadow-primary/20 ring-2 ring-primary/10" />
                 <h3 className="text-lg font-bold mb-5 text-foreground flex items-center gap-2">
-                    <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    <span className="text-white dark:text-white">
                         {group}
                     </span>
                     <span className="text-xs font-normal text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">

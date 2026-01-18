@@ -252,7 +252,9 @@ app.post('/papers/ingest', async (c) => {
   const body = await c.req.json();
   const parsed = metadataSchema.parse(body);
   
-  const fetched = await resolveMetadata(c.env, parsed.sourceUrl);
+  // Support bustCache parameter for refetching
+  const bustCache = c.req.query('bustCache') === 'true';
+  const fetched = await resolveMetadata(c.env, parsed.sourceUrl, bustCache);
   
   // Merge fetched metadata with user provided overrides or defaults
   const metadata = {

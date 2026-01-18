@@ -49,7 +49,7 @@ export function GardenPage() {
                          onClick={() => setTimelineGroupBy('date')}
                          className="h-8 text-xs"
                      >
-                         By Date
+                         By Paper Date
                      </Button>
                      <Button 
                          variant={timelineGroupBy === 'tag' ? 'secondary' : 'ghost'} 

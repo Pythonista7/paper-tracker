@@ -45,7 +45,10 @@ export const api = {
     request<Note>(`/notes/${noteId}`, { method: 'PATCH', body: JSON.stringify(body) }),
   deleteNote: (noteId: string) => request(`/notes/${noteId}`, { method: 'DELETE' }),
   getDashboard: () => request<DashboardSummary>('/dashboard'),
-  ingest: (sourceUrl: string) => request<Omit<CreatePaperInput, 'sourceUrl'>>('/papers/ingest', { method: 'POST', body: JSON.stringify({ sourceUrl }) }),
+  ingest: (sourceUrl: string, bustCache = false) => {
+    const query = bustCache ? '?bustCache=true' : '';
+    return request<Omit<CreatePaperInput, 'sourceUrl'>>(`/papers/ingest${query}`, { method: 'POST', body: JSON.stringify({ sourceUrl }) });
+  },
   uploadImage: async (file: File): Promise<{ url: string }> => {
     const formData = new FormData();
     formData.append('image', file);

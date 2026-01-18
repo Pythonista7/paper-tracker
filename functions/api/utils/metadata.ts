@@ -98,14 +98,21 @@ async function fetchGenericMetadata(url: string): Promise<MetadataResult | null>
   }
 }
 
-export async function resolveMetadata(env: Env, sourceUrl: string): Promise<MetadataResult | null> {
-  const cached = await env.PAPER_CACHE.get(cacheKey(sourceUrl));
-  if (cached) {
-    try {
-      const parsed = JSON.parse(cached);
-      // Simple validation to ensure we don't return old bad cache format if changed
-       if (typeof parsed === 'object') return parsed;
-    } catch (e) {}
+export async function resolveMetadata(env: Env, sourceUrl: string, bustCache = false): Promise<MetadataResult | null> {
+  if (!bustCache) {
+    const cached = await env.PAPER_CACHE.get(cacheKey(sourceUrl));
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        // Validate that cache has all expected fields - if publishedAt is missing for arXiv, re-fetch
+        const arxivId = extractArxivId(sourceUrl);
+        if (arxivId && !parsed.publishedAt) {
+          // Old cache format missing publishedAt, re-fetch
+        } else if (typeof parsed === 'object') {
+          return parsed;
+        }
+      } catch (e) {}
+    }
   }
 
   let result: MetadataResult | null = null;
