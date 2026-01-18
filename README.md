@@ -116,6 +116,13 @@ Use the top navigation or a board card to jump between these views.
 - **PDF Viewer** - Embedded PDF viewing with controls
 - **Status Tracking** - Track papers through to-read, in-progress, needs-review, and done states
 
+### Before Deploying to Cloud
+1. Build frontend with `cd frontend && npm run build && cd ..` , make sure build is successful.
+2. Then run wrangler locally `npx wrangler pages dev`
+3. Publish any new envs ( see above )
+4. Publish DB migrations ( see above )
+
+
 ### Deploying
 
 1. Build the frontend: `npm run build:frontend`.
@@ -131,6 +138,7 @@ Use the top navigation or a board card to jump between these views.
    ```bash
    npx wrangler d1 migrations apply paper-tracker
    ```
+5. To see logs use `npx wrangler pages deployment tail --project-name=paper-tracker`
 
 ## Key directories
 

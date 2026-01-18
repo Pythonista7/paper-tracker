@@ -37,6 +37,25 @@ iframe {
   border-radius: 999px;
 }
 
+@keyframes gradient-drift {
+  0% { transform: translate3d(-10px, -6px, 0) scale(1); }
+  50% { transform: translate3d(12px, 10px, 0) scale(1.03); }
+  100% { transform: translate3d(-8px, 6px, 0) scale(1); }
+}
+
+@keyframes slow-pan {
+  0% { transform: translateX(-8%); }
+  100% { transform: translateX(8%); }
+}
+
+.animate-gradient-drift {
+  animation: gradient-drift 26s ease-in-out infinite alternate;
+}
+
+.animate-slow-pan {
+  animation: slow-pan 32s ease-in-out infinite alternate;
+}
+
 @layer utilities {
   .bg-surface-900\/95 {
     background-color: rgba(11, 15, 28, 0.95);

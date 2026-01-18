@@ -1,9 +1,9 @@
-import { Env, Note, Paper, PaperStatus, ReadingSession, ShareToken } from './types';
+import { Env, Note, Paper, PaperLink, PaperStatus, ReadingSession, ShareToken } from './types';
 import { NoteInput, PaperInput, PaperUpdateInput } from './validation';
 
 const PAPER_SELECT = `
   SELECT id, title, authors, abstract, source_url as sourceUrl,
-         canonical_id as canonicalId, status, tags, created_at as createdAt,
+         canonical_id as canonicalId, status, type, published_at as publishedAt, completed_at as completedAt, tags, created_at as createdAt,
          updated_at as updatedAt
   FROM papers
 `;
@@ -16,6 +16,9 @@ type PaperRow = {
   sourceUrl: string;
   canonicalId: string;
   status: PaperStatus;
+  type: 'paper' | 'blog' | null;
+  publishedAt: string | null;
+  completedAt: string | null;
   tags: string | null;
   createdAt: string;
   updatedAt: string;
@@ -51,6 +54,9 @@ const parseTags = (value: string | null): string[] => {
 
 const mapPaper = (row: PaperRow): Paper => ({
   ...row,
+  type: row.type || 'paper',
+  publishedAt: row.publishedAt || undefined,
+  completedAt: row.completedAt || undefined,
   tags: parseTags(row.tags)
 });
 
@@ -101,8 +107,8 @@ export async function createPaper(env: Env, payload: PaperInput) {
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
   await env.DB.prepare(
-    `INSERT INTO papers (id, title, authors, abstract, source_url, canonical_id, status, tags, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO papers (id, title, authors, abstract, source_url, canonical_id, status, type, published_at, completed_at, tags, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       id,
@@ -112,6 +118,9 @@ export async function createPaper(env: Env, payload: PaperInput) {
       payload.sourceUrl,
       payload.canonicalId ?? '',
       payload.status ?? 'to-read',
+      payload.type ?? 'paper',
+      payload.publishedAt ?? null,
+      payload.completedAt ?? null,
       JSON.stringify(payload.tags ?? []),
       now,
       now
@@ -120,6 +129,7 @@ export async function createPaper(env: Env, payload: PaperInput) {
 
   return getPaper(env, id);
 }
+
 
 export async function updatePaper(env: Env, id: string, payload: PaperUpdateInput) {
   const fields: string[] = [];
@@ -148,6 +158,20 @@ export async function updatePaper(env: Env, id: string, payload: PaperUpdateInpu
   if (payload.status !== undefined) {
     fields.push('status = ?');
     values.push(payload.status);
+  }
+  if (payload.type !== undefined) {
+    fields.push('type = ?');
+    values.push(payload.type);
+  }
+  if (payload.publishedAt !== undefined) {
+    fields.push('published_at = ?');
+    values.push(payload.publishedAt);
+  }
+  if (payload.completedAt !== undefined) {
+    fields.push('completed_at = ?');
+    values.push(payload.completedAt);
+  }
+  if (payload.tags !== undefined) {
   }
   if (payload.tags !== undefined) {
     fields.push('tags = ?');
@@ -286,5 +310,73 @@ export async function getDashboard(env: Env) {
       paperTitle: row.paperTitle,
       paperAuthors: row.paperAuthors
     }))
+  };
+}
+
+export async function listLinks(env: Env, paperId: string) {
+  const outLinks = await env.DB.prepare(`
+    SELECT l.id, l.source_paper_id as sourcePaperId, l.target_paper_id as targetPaperId, l.relation,
+           p.title as targetTitle, p.status as targetStatus
+    FROM links l
+    JOIN papers p ON l.target_paper_id = p.id
+    WHERE l.source_paper_id = ?
+  `).bind(paperId).all();
+
+  const inLinks = await env.DB.prepare(`
+    SELECT l.id, l.source_paper_id as sourcePaperId, l.target_paper_id as targetPaperId, l.relation,
+           p.title as sourceTitle, p.status as sourceStatus
+    FROM links l
+    JOIN papers p ON l.source_paper_id = p.id
+    WHERE l.target_paper_id = ?
+  `).bind(paperId).all();
+
+  return {
+    outgoing: outLinks.results ?? [],
+    incoming: inLinks.results ?? []
+  };
+}
+
+export async function createLink(env: Env, sourceId: string, targetId: string, relation: string) {
+  const id = crypto.randomUUID();
+  await env.DB.prepare(
+    `INSERT INTO links (id, source_paper_id, target_paper_id, relation) VALUES (?, ?, ?, ?)`
+  ).bind(id, sourceId, targetId, relation).run();
+  
+  return { id, sourcePaperId: sourceId, targetPaperId: targetId, relation };
+}
+
+export async function deleteLink(env: Env, linkId: string) {
+  await env.DB.prepare('DELETE FROM links WHERE id = ?').bind(linkId).run();
+}
+
+export async function getPublicFeed(env: Env) {
+  const query = `${PAPER_SELECT} WHERE status = 'done' ORDER BY datetime(published_at) DESC, datetime(updated_at) DESC`;
+  const { results } = await env.DB.prepare(query).all<PaperRow>();
+  return (results ?? []).map(mapPaper);
+}
+
+export async function getPublicPaper(env: Env, id: string) {
+  const paper = await getPaper(env, id);
+  if (!paper || paper.status !== 'done') return null;
+  return paper;
+}
+
+export async function getPublicGraph(env: Env) {
+  const papers = await env.DB.prepare(`${PAPER_SELECT} WHERE status = 'done'`).all<PaperRow>();
+  const nodes = (papers.results ?? []).map(mapPaper);
+  
+  if (nodes.length === 0) return { nodes: [], links: [] };
+
+  const ids = nodes.map(n => `'${n.id}'`).join(',');
+  const query = `
+    SELECT id, source_paper_id as source, target_paper_id as target, relation
+    FROM links 
+    WHERE source_paper_id IN (${ids}) AND target_paper_id IN (${ids})
+  `;
+  const links = await env.DB.prepare(query).all();
+
+  return {
+    nodes: nodes.map(n => ({ id: n.id, title: n.title, type: n.type, status: n.status })),
+    links: links.results ?? []
   };
 }

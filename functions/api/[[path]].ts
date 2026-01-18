@@ -2,14 +2,20 @@ import { Hono } from 'hono';
 import { Env, PaperStatus } from './types';
 import type { ExecutionContext, PagesFunction } from '@cloudflare/workers-types';
 import {
+  createLink,
   createNote,
   createPaper,
   createSession,
+  deleteLink,
   deleteNote,
   deletePaper,
   getDashboard,
   getPaper,
+  getPublicFeed,
+  getPublicGraph,
+  getPublicPaper,
   getShareToken,
+  listLinks,
   listNotes,
   listPapers,
   listSessions,
@@ -31,6 +37,7 @@ import {
   validateSession,
   verifyPassword
 } from './auth';
+import { resolveMetadata } from './utils/metadata';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -43,98 +50,6 @@ const metadataSchema = z.object({
   abstract: z.string().optional(),
   canonicalId: z.string().optional()
 });
-
-const cacheKey = (url: string) => `paper-meta:${url}`;
-
-function extractArxivId(url: string): string | null {
-  const cleanUrl = url.split('?')[0].replace(/\.pdf$/, '');
-  const regex = /arxiv\.org\/(?:abs|pdf)\/((?:[\w-]+\/)?[\d.]+(?:v\d+)?)/;
-  const match = cleanUrl.match(regex);
-  if (match && match[1]) {
-    return match[1].replace(/\.$/, '');
-  }
-  return null;
-}
-
-function parseArxivXml(xml: string) {
-  const entryMatch = xml.match(/<entry>([\s\S]*?)<\/entry>/);
-  if (!entryMatch) return null;
-  const entry = entryMatch[1];
-
-  const titleMatch = entry.match(/<title[^>]*>([\s\S]*?)<\/title>/);
-  const title = titleMatch ? titleMatch[1].replace(/\s+/g, ' ').trim() : '';
-
-  const summaryMatch = entry.match(/<summary[^>]*>([\s\S]*?)<\/summary>/);
-  const abstract = summaryMatch ? summaryMatch[1].replace(/\s+/g, ' ').trim() : '';
-
-  const authorMatches = entry.matchAll(/<author>[\s\S]*?<name>([\s\S]*?)<\/name>[\s\S]*?<\/author>/g);
-  const authors = Array.from(authorMatches).map(m => m[1].trim()).join(', ');
-
-  const categories: string[] = [];
-  const catRegex = /<category[^>]*term="([^"]*)"/g;
-  let catMatch;
-  while ((catMatch = catRegex.exec(entry)) !== null) {
-      categories.push(catMatch[1]);
-  }
-
-  return {
-    title,
-    abstract,
-    authors,
-    tags: categories
-  };
-}
-
-async function fetchArxivMetadata(id: string) {
-  const response = await fetch(`https://export.arxiv.org/api/query?id_list=${id}`);
-  if (!response.ok) return null;
-  const xml = await response.text();
-  return parseArxivXml(xml);
-}
-
-async function resolveMetadata(env: Env, payload: z.infer<typeof metadataSchema>) {
-  const cached = await env.PAPER_CACHE.get(cacheKey(payload.sourceUrl));
-  if (cached) {
-    const parsed = JSON.parse(cached);
-    // If the cached title is just the URL, it's likely a failed fetch from before.
-    // We should try to fetch again.
-    if (parsed.title !== payload.sourceUrl) {
-      return parsed;
-    }
-  }
-
-  let metadata = {
-    title: payload.title ?? payload.sourceUrl,
-    authors: payload.authors ?? '',
-    abstract: payload.abstract ?? '',
-    canonicalId: payload.canonicalId ?? '',
-    tags: [] as string[]
-  };
-
-  const arxivId = extractArxivId(payload.sourceUrl);
-  if (arxivId) {
-    try {
-      const arxivMeta = await fetchArxivMetadata(arxivId);
-      if (arxivMeta) {
-        metadata = {
-          title: arxivMeta.title || metadata.title,
-          authors: arxivMeta.authors || metadata.authors,
-          abstract: arxivMeta.abstract || metadata.abstract,
-          canonicalId: arxivId,
-          tags: arxivMeta.tags || []
-        };
-      }
-    } catch (e) {
-      console.error('Failed to fetch arXiv metadata', e);
-    }
-  }
-
-  await env.PAPER_CACHE.put(cacheKey(payload.sourceUrl), JSON.stringify(metadata), {
-    expirationTtl: 60 * 60 * 24 * 30
-  });
-
-  return metadata;
-}
 
 app.get('/', (c) => c.json({ ok: true, service: c.env.APP_NAME }));
 
@@ -336,7 +251,19 @@ app.get('/dashboard', async (c) => {
 app.post('/papers/ingest', async (c) => {
   const body = await c.req.json();
   const parsed = metadataSchema.parse(body);
-  const metadata = await resolveMetadata(c.env, parsed);
+  
+  const fetched = await resolveMetadata(c.env, parsed.sourceUrl);
+  
+  // Merge fetched metadata with user provided overrides or defaults
+  const metadata = {
+    title: fetched?.title ?? parsed.title ?? parsed.sourceUrl,
+    authors: fetched?.authors ?? parsed.authors ?? '',
+    abstract: fetched?.abstract ?? parsed.abstract ?? '',
+    canonicalId: fetched?.canonicalId ?? parsed.canonicalId ?? '',
+    tags: fetched?.tags ?? [],
+    publishedAt: fetched?.publishedAt
+  };
+
   return c.json(metadata);
 });
 
@@ -406,6 +333,50 @@ app.get('/images/:filename', async (c) => {
     console.error('Error retrieving image:', error);
     return c.json({ error: 'Failed to retrieve image' }, 500);
   }
+});
+
+app.get('/papers/:id/links', async (c) => {
+  const links = await listLinks(c.env, c.req.param('id'));
+  return c.json(links);
+});
+
+app.post('/links', async (c) => {
+  const authError = await requireAuth(c);
+  if (authError) return authError;
+
+  const { sourceId, targetId, relation } = await c.req.json();
+  if (!sourceId || !targetId || !relation) {
+    return c.json({ error: 'Missing required fields' }, 400);
+  }
+
+  const link = await createLink(c.env, sourceId, targetId, relation);
+  return c.json(link, 201);
+});
+
+app.delete('/links/:id', async (c) => {
+  const authError = await requireAuth(c);
+  if (authError) return authError;
+
+  await deleteLink(c.env, c.req.param('id'));
+  return c.json({ ok: true });
+});
+
+app.get('/public/feed', async (c) => {
+  const feed = await getPublicFeed(c.env);
+  return c.json(feed);
+});
+
+app.get('/public/papers/:id', async (c) => {
+  const paper = await getPublicPaper(c.env, c.req.param('id'));
+  if (!paper) return c.json({ error: 'Paper not found or not public' }, 404);
+  const notes = await listNotes(c.env, paper.id);
+  const links = await listLinks(c.env, paper.id);
+  return c.json({ paper, notes, links });
+});
+
+app.get('/public/graph', async (c) => {
+  const graph = await getPublicGraph(c.env);
+  return c.json(graph);
 });
 
 export const onRequest: PagesFunction<Env> = (context) => {

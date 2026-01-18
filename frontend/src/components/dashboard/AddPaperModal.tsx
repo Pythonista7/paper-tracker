@@ -18,6 +18,8 @@ export function AddPaperModal({ onCreated }: Props) {
   const [authors, setAuthors] = useState('');
   const [abstract, setAbstract] = useState('');
   const [tags, setTags] = useState('');
+  const [type, setType] = useState<'paper' | 'blog'>('paper');
+  const [publishedAt, setPublishedAt] = useState('');
   const [loadingMeta, setLoadingMeta] = useState(false);
   const queryClient = useQueryClient();
 
@@ -28,6 +30,8 @@ export function AddPaperModal({ onCreated }: Props) {
         title: title || sourceUrl,
         authors,
         abstract,
+        type,
+        publishedAt: publishedAt || undefined,
         tags: tags
           .split(',')
           .map((tag) => tag.trim())
@@ -39,6 +43,8 @@ export function AddPaperModal({ onCreated }: Props) {
       setAuthors('');
       setAbstract('');
       setTags('');
+      setType('paper');
+      setPublishedAt('');
       setOpen(false);
       queryClient.invalidateQueries({ queryKey: ['papers'] });
       onCreated?.();
@@ -53,6 +59,10 @@ export function AddPaperModal({ onCreated }: Props) {
       setTitle(metadata.title ?? '');
       setAuthors(metadata.authors ?? '');
       setAbstract(metadata.abstract ?? '');
+      if (metadata.publishedAt) {
+        // Ensure format YYYY-MM-DD
+        setPublishedAt(metadata.publishedAt.split('T')[0]);
+      }
       if (metadata.tags) {
         setTags(metadata.tags.join(', '));
       }
@@ -80,6 +90,22 @@ export function AddPaperModal({ onCreated }: Props) {
       <div className="grid gap-3 sm:grid-cols-2">
         <Input placeholder="Title" value={title} onChange={(event) => setTitle(event.target.value)} />
         <Input placeholder="Authors" value={authors} onChange={(event) => setAuthors(event.target.value)} />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <select
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          value={type}
+          onChange={(e) => setType(e.target.value as 'paper' | 'blog')}
+        >
+          <option value="paper">Paper</option>
+          <option value="blog">Blog / Article</option>
+        </select>
+        <Input 
+          type="date" 
+          placeholder="Published Date" 
+          value={publishedAt} 
+          onChange={(event) => setPublishedAt(event.target.value)} 
+        />
       </div>
       <Textarea placeholder="Abstract" value={abstract} onChange={(event) => setAbstract(event.target.value)} rows={3} />
       <Input placeholder="Tags (comma separated)" value={tags} onChange={(event) => setTags(event.target.value)} />

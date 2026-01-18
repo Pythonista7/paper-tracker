@@ -17,12 +17,12 @@ export function DashboardSummary() {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {(data?.statuses ?? []).map((item) => (
-        <Card key={item.status} className="space-y-2">
+        <Card key={item.status} className="space-y-2 p-4">
           <p className="text-sm uppercase tracking-wide text-white/60">{LABELS[item.status] ?? item.status}</p>
           <p className="text-3xl font-semibold">{item.count}</p>
         </Card>
       ))}
-      <Card className="sm:col-span-2">
+      <Card className="sm:col-span-2 p-4">
         <p className="text-sm uppercase tracking-wide text-white/60">Recent notes</p>
         <div className="mt-2 space-y-2 text-sm text-white/70">
           {(data?.recentNotes ?? []).map((note) => (

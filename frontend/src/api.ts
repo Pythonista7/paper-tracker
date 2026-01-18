@@ -62,7 +62,13 @@ export const api = {
     }
 
     return await response.json() as { url: string };
-  }
+  },
+  getPublicFeed: () => request<Paper[]>('/public/feed'),
+  getPublicPaperDetails: (id: string) => request<{ paper: Paper; notes: Note[]; links: { outgoing: any[]; incoming: any[] } }>(`/public/papers/${id}`),
+  getLinks: (paperId: string) => request<{ outgoing: any[]; incoming: any[] }>(`/papers/${paperId}/links`),
+  createLink: (payload: { sourceId: string; targetId: string; relation: string }) => request('/links', { method: 'POST', body: JSON.stringify(payload) }),
+  deleteLink: (id: string) => request(`/links/${id}`, { method: 'DELETE' }),
+  getPublicGraph: () => request<{ nodes: any[]; links: any[] }>('/public/graph'),
 };
 
 // Auth API
