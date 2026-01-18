@@ -8,6 +8,9 @@ export interface Paper {
   sourceUrl: string;
   canonicalId: string;
   status: PaperStatus;
+  type: 'paper' | 'blog';
+  publishedAt?: string;
+  completedAt?: string;
   tags: string[];
   createdAt: string;
   updatedAt: string;
@@ -21,6 +24,13 @@ export interface Note {
   sectionRef?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PaperLink {
+  id: string;
+  sourcePaperId: string;
+  targetPaperId: string;
+  relation: string;
 }
 
 export interface ReadingSession {
@@ -43,5 +53,7 @@ export interface CreatePaperInput {
   sourceUrl: string;
   canonicalId?: string;
   status?: PaperStatus;
+  type?: 'paper' | 'blog';
+  publishedAt?: string;
   tags?: string[];
 }

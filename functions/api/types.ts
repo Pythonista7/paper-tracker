@@ -8,6 +8,9 @@ export interface Paper {
   sourceUrl: string;
   canonicalId: string;
   status: PaperStatus;
+  type: 'paper' | 'blog';
+  publishedAt?: string;
+  completedAt?: string;
   tags: string[];
   createdAt: string;
   updatedAt: string;
@@ -34,6 +37,13 @@ export interface ReadingSession {
 export interface Tag {
   id: string;
   label: string;
+}
+
+export interface PaperLink {
+  id: string;
+  sourcePaperId: string;
+  targetPaperId: string;
+  relation: string;
 }
 
 export interface ShareToken {

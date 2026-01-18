@@ -7,6 +7,9 @@ export const paperInputSchema = z.object({
   sourceUrl: z.string().url(),
   canonicalId: z.string().optional().default(''),
   status: z.enum(['to-read', 'in-progress', 'done', 'needs-review']).optional(),
+  type: z.enum(['paper', 'blog']).optional().default('paper'),
+  publishedAt: z.string().optional(), // ISO string YYYY-MM-DD
+  completedAt: z.string().optional(), // ISO string when reading/notes completed
   tags: z.array(z.string()).optional().default([])
 });
 
